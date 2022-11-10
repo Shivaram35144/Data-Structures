@@ -99,25 +99,25 @@ BST del(int x,BST t){
         else{
             if(x>t->val){
             t->right=del(x,t->right);
-        }
-        else{
-            if(t->left && t->right){
-                temp=findmin(t->right);
-                t->val=temp->val;
-                t->right=del(t->val,t->right);
             }
             else{
-                temp=t;
-                if(t->left==NULL){
-                    t=t->right;
+                if(t->left && t->right){
+                    temp=findmin(t->right);
+                    t->val=temp->val;
+                    t->right=del(t->val,t->right);
                 }
                 else{
-                    if(t->right ==NULL){
-                        t=t->left;
-                        
+                    temp=t;
+                    if(t->left==NULL){
+                        t=t->right;
+                    }
+                    else{
+                        if(t->right ==NULL){
+                            t=t->left;
+                            
+                        }
                     }
                 }
-            }
             
         }
         }
