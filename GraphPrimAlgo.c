@@ -20,7 +20,7 @@ void prims(int n,int cost[][10]){
         }
       }
       if(visited[u]==0 || visited[v]==0){
-        printf("edge (%d, %d)= %d \n",ne,u,v,min);
+        printf("edge (%d, %d)= %d \n",u,v,min);
         ne+=1;
         mincost+=min;
         visited[v]=1;
