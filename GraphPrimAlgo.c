@@ -1,77 +1,51 @@
-// Prim's Algorithm in C
 
 #include<stdio.h>
-#include<stdbool.h> 
-#include<string.h>
+#include<stdlib.h>
 
-#define INF 9999999
-
-// number of vertices in graph
-#define V 5
-
-// create a 2d array of size 5x5
-//for adjacency matrix to represent graph
- int G[V][V] = {
-   //BDEFG 
-   {0, 16, 3, 13, 6},
-  {16, 0, 9, 8, 9},
-  {3, 9, 0, 7, 4},
-  {13, 8, 7, 0, 20},
-  {6, 9, 4, 20, 0}};
-
-int main() {
-  int no_edge;  // number of edge
-
-  // create a array to track selected vertex
-  // selected will become true otherwise false
-  int selected[V];
-
-  // set selected false initially
-  memset(selected, false, sizeof(selected));
-  
-  // set number of edge to 0
-  no_edge = 0;
-
-  // the number of egde in minimum spanning tree will be
-  // always less than (V -1), where V is number of vertices in
-  //graph
-
-  // choose 0th vertex and make it true
-  selected[0] = true;
-
-  int x;  //  row number
-  int y;  //  col number
-
-  // print for edge and weight
-  printf("Edge : Weight\n");
-
-  while (no_edge < V - 1) {
-    //For every vertex in the set S, find the all adjacent vertices
-    // , calculate the distance from the vertex selected at step 1.
-    // if the vertex is already in the set S, discard it otherwise
-    //choose another vertex nearest to selected vertex  at step 1.
-
-    int min = INF;
-    x = 0;
-    y = 0;
-
-    for (int i = 0; i < V; i++) {
-      if (selected[i]) {
-        for (int j = 0; j < V; j++) {
-          if (!selected[j] && G[i][j]) {  // not in selected and there is an edge
-            if (min > G[i][j]) {
-              min = G[i][j];
-              x = i;
-              y = j;
-            }
+void prims(int n,int cost[][10]){
+  int u,v,min,mincost=0,visited[n],ne=1;
+  for(int i=0;i<n;i++){
+    visited[i]=0;
+  }
+  visited[0]=1;//ch
+  while(ne<n){
+    for(int i=0;i<n;i++){
+      min=999;
+      for(int j=0;j<n;j++){
+        if (cost[i][j]<min){
+          if(visited[i]!=0){
+            min=cost[i][j];
+            u=i;v=j;
           }
         }
       }
-    }
-    printf("%c - %c : %d\n", x+65, y+65, G[x][y]);
-    selected[y] = true;
-    no_edge++;
-  }
+      if(visited[u]==0 || visited[v]==0){
+        printf("edge (%d, %d)= %d \n",ne,u,v,min);
+        ne+=1;
+        mincost+=min;
+        visited[v]=1;
 
+      }
+      cost[u][v]=cost[v][u]=999;
+    }
+    
+  }
+  printf("Cost of mst = %d",mincost);
+}
+
+int main(){
+  int n,cost[10][10];
+  printf("No of nodes ");
+  scanf("%d",&n);
+  printf("Adjacency matrix/cost matrix\n");
+  for(int i=0;i<n;i++){
+    for(int j=0;j<n;j++){
+      scanf("%d",&cost[i][j]);
+      if(cost[i][j]==0){
+        cost[i][j]=999;
+      }
+    }
+  }
+  prims(n,cost);
   return 0;
 }
