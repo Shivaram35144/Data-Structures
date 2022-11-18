@@ -1,164 +1,133 @@
-#include <stdio.h>
-#include <stdlib.h>
+#include <limits.h>
 #include <stdbool.h>
+#include <stdio.h>
 
-#define MAX 10
+#define V 7
 
-struct Vertex {
-   char label;
-   bool visited;
-};
-
-
-int queue[MAX];
-int rear = -1;
-int front = 0;
-int queueItemCount = 0;
-int stack[MAX]; 
-int top = -1;
-
-struct Vertex* lstVertices[MAX];
-
-int adjMatrix[MAX][MAX];
-
-int vertexCount = 0;
-
-void push(int item) { 
-   stack[++top] = item; 
-} 
-
-int pop() { 
-   return stack[top--]; 
-} 
-
-int peek() {
-   return stack[top];
-}
-
-bool isStackEmpty() {
-   return top == -1;
-}
-void insert(int data) {
-   queue[++rear] = data;
-   queueItemCount++;
-}
-
-int removeData() {
-   queueItemCount--;
-   return queue[front++]; 
-}
-
-bool isQueueEmpty() {
-   return queueItemCount == 0;
-}
-
-
-void addVertex(char label) {
-   struct Vertex* vertex = (struct Vertex*) malloc(sizeof(struct Vertex));
-   vertex->label = label;  
-   vertex->visited = false;     
-   lstVertices[vertexCount++] = vertex;
-}
-
-void addEdge(int start,int end) {
-   adjMatrix[start][end] = 1;
-   adjMatrix[end][start] = 1;
-}
-
-void displayVertex(int vertexIndex) {
-   printf("%c ",lstVertices[vertexIndex]->label);
-}       
-
-int getAdjUnvisitedVertex(int vertexIndex) {
-   int i;
+int minDistance(int dist[], bool sptSet[])
+{
 	
-   for(i = 0; i<vertexCount; i++) {
-      if(adjMatrix[vertexIndex][i] == 1 && lstVertices[i]->visited == false)
-         return i;
-   }
-	
-   return -1;
+	int min = INT_MAX, min_index;
+
+	for (int v = 0; v < V; v++)
+		if (sptSet[v] == false && dist[v] <= min)
+			min = dist[v], min_index = v;
+
+	return min_index;
 }
 
-void breadthFirstSearch() {
-   int i;
 
-   lstVertices[0]->visited = true;
-
-   displayVertex(0);   
-
-   insert(0);
-   int unvisitedVertex;
-
-   while(!isQueueEmpty()) {
-      int tempVertex = removeData();   
-
-      while((unvisitedVertex = getAdjUnvisitedVertex(tempVertex)) != -1) {    
-         lstVertices[unvisitedVertex]->visited = true;
-         displayVertex(unvisitedVertex);
-         insert(unvisitedVertex);               
-      }
-		
-   }   
-
-   for(i = 0;i<vertexCount;i++) {
-      lstVertices[i]->visited = false;
-   }    
+void printSolution(int dist[])
+{
+	printf("Vertex \t\t Distance from Source\n");
+	for (int i = 0; i < V; i++)
+		printf("%d \t\t\t\t %d\n", i, dist[i]);
 }
-void depthFirstSearch() {
-   int i;
 
-   lstVertices[0]->visited = true;
 
-   displayVertex(0);   
+void dijkstra(int graph[V][V], int src)
+{
+	int dist[V]; 
 
-   push(0);
+	bool sptSet[V]; 
+	for (int i = 0; i < V; i++)
+		dist[i] = INT_MAX, sptSet[i] = false;
 
-   while(!isStackEmpty()) {
-      int unvisitedVertex = getAdjUnvisitedVertex(peek());
+	dist[src] = 0;
 
-      if(unvisitedVertex == -1) {
-         pop();
-      } else {
-         lstVertices[unvisitedVertex]->visited = true;
-         displayVertex(unvisitedVertex);
-         push(unvisitedVertex);
-      }
-   }
+	for (int count = 0; count < V - 1; count++) {
+		int u = minDistance(dist, sptSet);
+		sptSet[u] = true;
+		for (int v = 0; v < V; v++)
+
+			if (!sptSet[v] && graph[u][v]
+				&& dist[u] != INT_MAX
+				&& dist[u] + graph[u][v] < dist[v])
+				dist[v] = dist[u] + graph[u][v];
+	}
+
+	printSolution(dist);
 }
-int main() {
-   int i, j;
 
-   for(i = 0; i<MAX; i++)
-   {
-      for(j = 0; j<MAX; j++) 
-         adjMatrix[i][j] = 0;
-   }
-   addVertex('A');   
-   addVertex('B');   
-   addVertex('C');   
-   addVertex('D'); 
-   addVertex('E');
-   addVertex('F');   
-   addVertex('G');   
-   addVertex('H');   
-   addVertex('I'); 
-   addVertex('J');
-   addEdge(0,1);    
-   addEdge(0,2);    
-   addEdge(0,3);    
-   addEdge(1,3);    
-   addEdge(3,4);
-   addEdge(3,6);
-   addEdge(4,5);    
-   addEdge(4,7);    
-   addEdge(5,6);    
-   addEdge(5,7);    
-   addEdge(5,8);    
-   addEdge(6,8);    
-   addEdge(8,9);    
-   breadthFirstSearch();
-   depthFirstSearch();
+int main()
+{
+	int graph[V][V] = { { 0, 5, 3, 2, 0, 0, 0 },
+						{ 5, 0, 2, 0, 0, 3, 1 },
+						{ 3, 2, 0, 7, 0, 7, 0 },
+						{ 2, 0, 7, 0, 7, 2, 0 },
+						{ 0, 0, 0, 7, 0, 1, 0 },
+						{ 0, 3, 7, 2, 1, 0, 1 },
+						{ 0, 1, 0, 0, 0, 1, 0},
+						 };
 
-   return 0;
+	dijkstra(graph, 0);
+
+	return 0;
+}
+
+
+
+
+
+
+
+
+
+
+//sort nlogn
+
+#include<stdio.h>
+
+int partition(int alist[],int first,int last){
+    int pivotvalue = alist[first];
+    int leftmark = first+1;
+    int rightmark = last;
+    int done = 0;
+    while(done==0){
+       while(leftmark <= rightmark && alist[leftmark] <= pivotvalue){
+           leftmark = leftmark + 1;}
+
+       while (alist[rightmark] >= pivotvalue && rightmark >= leftmark){
+           rightmark = rightmark -1;}
+
+       if(rightmark < leftmark){
+           done = 1;}
+       else{
+           int temp = alist[leftmark];
+           alist[leftmark] = alist[rightmark];
+           alist[rightmark] = temp;} }
+    int temp = alist[first];
+    alist[first] = alist[rightmark];
+    alist[rightmark] = temp;
+    return rightmark; }
+    
+void quickSort(int alist[],int first,int last){
+    if(first<last){
+        int splitpoint = partition(alist,first,last);
+        quickSort (alist,first,splitpoint-1);
+        quickSort (alist,splitpoint+1,last);
+}}
+
+void printArray(int array[], int size) {
+  for (int i = 0; i < size; ++i) {
+    printf("%d ", array[i]);
+  }
+  printf("\n");
+}
+int main(){
+  int n;
+  printf("\nHow many elements?\t:  ");
+  scanf("%d",&n);
+  printf("\n");
+  int data[n];
+  printf("Enter the elements : \n");
+  for(int i =0;i<n;i++){
+      int x;
+      scanf("%d",&x);
+      data[i]=x;
+  }
+  int size = sizeof(data) / sizeof(data[0]);
+  quickSort(data, 0,size);
+  printf("\nThe sorted array is : \n");
+  printArray(data, size);
 }
